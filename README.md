@@ -1,6 +1,7 @@
 # bunny-loop
 
-A game written in AssemblyScript for the [WASM-4](https://wasm4.org) fantasy console.
+Um jogo em desenvolvimento em WASM4 (Um console fantasioso de Web-Assembly).
+Link para o GDD em desenvolvimento: [Bunny Loop Docs](https://docs.google.com/document/d/1K0g2D4TUmUWjF4s-wnekEIkwISi7nrTclOy45-_8BMU/edit?usp=sharing)
 
 ## Building
 
