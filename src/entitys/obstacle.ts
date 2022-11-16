@@ -12,4 +12,6 @@ export class Obstacle{
 		store<u16>(w4.DRAW_COLORS, 0x0023);
         w4.rect(this.vetor2.x, this.vetor2.y, this.size[0], this.size[1]);
 	}
+	
+	// TODO: Gerador de Objetos para o cenário.
 }

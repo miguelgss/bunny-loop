@@ -7,5 +7,8 @@
   },
   "devDependencies": {
     "assemblyscript": "^0.20.14"
+  },
+  "dependencies": {
+    "w4": "^0.0.16"
   }
 }

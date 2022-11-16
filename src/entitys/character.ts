@@ -1,4 +1,5 @@
 import { Vetor2 } from "./vetor";
+import { Obstacle } from "./obstacle";
 import * as w4 from "../wasm4";
 
 export class Character{
@@ -22,7 +23,25 @@ export class Character{
 		){
 			return true;
 		}
-		return false;
-		
+		return false;	
+	}
+	
+	collisionObjects(otherObjects: Obstacle[]): boolean[]{
+		var collisions = new Array<boolean>(otherObjects.length);
+		for(let i:i32 = 0; i < otherObjects.length; i++){
+			if(
+			this.vetor2.x < otherObjects[i].vetor2.x + otherObjects[i].size[0] &
+			otherObjects[i].vetor2.x < this.vetor2.x + this.size[0] &
+			this.vetor2.y < otherObjects[i].vetor2.y + otherObjects[i].size[1] &
+			otherObjects[i].vetor2.y < this.vetor2.y + this.size[1]
+			)
+			{
+				collisions[i] = true;
+			}
+			else{
+				collisions[i] = false;			
+				}
+			}
+		return collisions;
 	}
 }

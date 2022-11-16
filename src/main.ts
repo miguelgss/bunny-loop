@@ -1,13 +1,20 @@
 import * as w4 from "./wasm4";
 
-// Objects
+// Import Entities
 import { Character } from "./entitys/character";
 import { Obstacle } from "./entitys/obstacle";
+
+// Import Scenes
+import { PlayerMenu } from "./scenes/player-menu";
 
 const player = new Character();
 const navi = new Character();
 const enemy = new Character();
 const obstacle = new Obstacle();
+
+const playerMenu = new PlayerMenu();
+
+// Objects position
 player.vetor2.x = 90-8; player.vetor2.y = 80-8;
 
 enemy.vetor2.x = 30-8; enemy.vetor2.y = 40-8;
@@ -40,7 +47,16 @@ export function update (): void {
 	obstacle.draw(120,0,20,60);
 	obstacle.draw(0,0,20,60);
 	obstacle.draw(140,0,20,60);
-	obstacle.draw(40,40,80,80);
+	//obstacle.draw(40,40,80,80);
+	
+	// Checa colisão do obstacle.draw mais recente (ultimo)
+	var testList = [obstacle, obstacle];
+	if(player.collisionObjects(testList)[1]){
+		w4.text("Coll. Obj: true", 2, 16);
+	}
+	else {
+		w4.text("Coll. Obj: false", 2, 16);
+	}
 	
 	input();
 	
@@ -63,8 +79,7 @@ export function update (): void {
 	player.draw();
 	
 	if(menuOn){
-		store<u16>(w4.DRAW_COLORS, 0x0034);
-        w4.rect(2, 2, 78, 156);
+		playerMenu.draw();
 	}
 
 }
@@ -86,10 +101,12 @@ export function input(): void {
 			player.vetor2.movement(1,0);
 	}
 	if(menuOn){
-		if (gamepad & w4.BUTTON_UP)
-			player.vetor2.movement(0,-1);
-		if (gamepad & w4.BUTTON_DOWN)
-			player.vetor2.movement(0,1);
+		if (PressedThisFrame & w4.BUTTON_UP)
+			playerMenu.selectedOption -= 1;
+		if (PressedThisFrame & w4.BUTTON_DOWN)
+			playerMenu.selectedOption += 1;
+		if (PressedThisFrame & w4.BUTTON_2)
+			playerMenu.executeOption();
 	}
 	if (PressedThisFrame & w4.BUTTON_1){
 		menuOn = !menuOn;
