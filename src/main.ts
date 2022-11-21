@@ -1,5 +1,7 @@
 import * as w4 from "./wasm4";
 
+// Import sprites
+import { bunny } from "./resources/sprites"
 // Import Entities
 import { Character } from "./entitys/character";
 import { Obstacle } from "./entitys/obstacle";
@@ -32,26 +34,36 @@ let gameRunning:boolean = true;
 
 // Start before main loop
 export function start (): void{
-		
+
+	// Define a paleta de cores
+	store<u32>(w4.PALETTE, 0x210b1b , 0 * sizeof<u32>());
+	store<u32>(w4.PALETTE, 0x4d222c , 1 * sizeof<u32>());   
+	store<u32>(w4.PALETTE, 0x9d654c  , 2 * sizeof<u32>());  
+	store<u32>(w4.PALETTE, 0xcfab51 , 3 * sizeof<u32>());
+	
+	// Definição de sprites
+	player.setSprite(bunny.frameNumber, bunny.frameList);
 }
 // Main Loop
 export function update (): void {
 
 	frameCount++;
 	
-	obstacle.draw(40,0,20,40);
-	obstacle.draw(60,0,20,40);
-	obstacle.draw(100,0,20,40);
-	obstacle.draw(80,0,20,40);
-	obstacle.draw(20,0,20,60);
-	obstacle.draw(120,0,20,60);
-	obstacle.draw(0,0,20,60);
-	obstacle.draw(140,0,20,60);
+	obstacle.drawStage(obstacle.stageOne());
+	var obstacleCollisions = player.collisionObjects(obstacle.stageOne());
+	//~ obstacle.draw(40,0,20,40);
+	//~ obstacle.draw(60,0,20,40);
+	//~ obstacle.draw(100,0,20,40);
+	//~ obstacle.draw(80,0,20,40);
+	//~ obstacle.draw(20,0,20,60);
+	//~ obstacle.draw(120,0,20,60);
+	//~ obstacle.draw(0,0,20,60);
+	//~ obstacle.draw(140,0,20,60);
 	//obstacle.draw(40,40,80,80);
 	
 	// Checa colisão do obstacle.draw mais recente (ultimo)
-	var testList = [obstacle, obstacle];
-	if(player.collisionObjects(testList)[1]){
+
+	if(obstacleCollisions.includes(true)){
 		w4.text("Coll. Obj: true", 2, 16);
 	}
 	else {
@@ -76,7 +88,7 @@ export function update (): void {
 	
 	enemy.draw();
 	navi.draw();
-	player.draw();
+	player.drawSprite(frameCount);
 	
 	if(menuOn){
 		playerMenu.draw();
