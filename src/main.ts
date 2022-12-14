@@ -1,7 +1,7 @@
 import * as w4 from "./wasm4";
 
 // Import sprites
-import { bunny } from "./resources/sprites"
+import * as sprites from "./resources/sprites"
 // Import Entities
 import { Character } from "./entitys/character";
 import { Obstacle } from "./entitys/obstacle";
@@ -46,7 +46,8 @@ export function start (): void{
 	store<u32>(w4.PALETTE, 0xcfab51 , 3 * sizeof<u32>());
 	
 	// Definição de sprites
-	player.setSprite(bunny.frameNumber, bunny.frameList);
+	player.setSprite(sprites.bunny.frameNumber, sprites.bunny.frameList);
+	enemy.battleSprite = sprites.maqna.battleFrameList;
 }
 // Main Loop
 export function update (): void {
@@ -96,6 +97,7 @@ export function update (): void {
 			w4.text("Collision: true", 2, 2);
 			gameRunning = false;
 			battle.battleOn = true;
+			battle.enemySprite = enemy.battleSprite;
 		}
 		else {
 			w4.text("Collision: false", 2, 2);

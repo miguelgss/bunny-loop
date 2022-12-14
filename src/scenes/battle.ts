@@ -4,9 +4,16 @@ import { Character } from "../entitys/character";
 export class Battle{
 	options: string[] = ['Act', 'Def', 'Run'];
 	selectedOption:i32 = 0;
+	enemySprite:usize[] = [];
 	battleOn: boolean = false;
 	
+	battleFrameCount: i32 = 0;
+	frameNumber: i32 = 0;
+	frameYAnimation: i32[] = [32, 33, 34, 35, 36, 36, 35, 34, 33, 32]
+	
 	draw() : void {
+		
+		this.battleFrameCount++;
 		if(this.selectedOption > this.options.length - 1){
 			w4.trace(`Antes DOWN: ${this.selectedOption}`);
 			this.selectedOption = 0;
@@ -27,6 +34,16 @@ export class Battle{
 		
 		store<u16>(w4.DRAW_COLORS, 0x0012);
 		w4.rect(10,90,140,60);
+		
+		if(this.battleFrameCount % 8 == 0){
+			this.frameNumber++;
+		}
+		if(this.frameNumber >= this.frameYAnimation.length){
+			this.frameNumber = 0;
+		}
+		
+		store<u16>(w4.DRAW_COLORS, 0x1234);
+		w4.blit(this.enemySprite[0], 64, this.frameYAnimation[this.frameNumber], 32, 32, 1);
 		
 		for(let i:i32 = 0; i < this.options.length; i++){
 			if (i == this.selectedOption)

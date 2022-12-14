@@ -11,6 +11,8 @@ export class Character{
     frameNumber: i32 = 0;
     frameList: usize[] = [];
     
+    battleSprite: usize[] = [];
+    
     // Define o sprite
     setSprite(frameNumber:i32, frameList:usize[]) : void{
 		this.frameNumber = frameNumber;
