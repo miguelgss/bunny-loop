@@ -8,6 +8,7 @@ import { Obstacle } from "./entitys/obstacle";
 
 // Import Scenes
 import { PlayerMenu } from "./scenes/player-menu";
+import { Battle } from "./scenes/battle";
 
 const player = new Character();
 const navi = new Character();
@@ -15,6 +16,7 @@ const enemy = new Character();
 const obstacle = new Obstacle();
 
 const playerMenu = new PlayerMenu();
+const battle = new Battle();
 
 // Objects position
 player.vetor2.x = 90-8; player.vetor2.y = 80-8;
@@ -29,8 +31,10 @@ let prevState: u8;
 
 // GeneralChecks
 let frameCount = 0;
+let battleCooldownCount = 0;
 let menuOn:boolean = false;
 let gameRunning:boolean = true;
+let canBattleCooldown:boolean = true;
 
 // Start before main loop
 export function start (): void{
@@ -73,19 +77,32 @@ export function update (): void {
 	input();
 	
 	if(gameRunning){
+		if(!canBattleCooldown)
+			battleCooldownCount++;
+		else
+			battleCooldownCount = 0;
+			
+		if(battleCooldownCount > 200){
+			canBattleCooldown = true;
+			battleCooldownCount = 0;
+		}
+		
 		naviMove();
-		enemy.vetor2.followVetor(player.vetor2, frameCount, 5);
+		if(canBattleCooldown)
+			enemy.vetor2.followVetor(player.vetor2, frameCount, 5);
+		
+		if(player.collision(enemy) && canBattleCooldown){
+			enemy.color = 0x0031;
+			w4.text("Collision: true", 2, 2);
+			gameRunning = false;
+			battle.battleOn = true;
+		}
+		else {
+			w4.text("Collision: false", 2, 2);
+			enemy.color = 0x0024;
+		}
 	}
     
-    if(player.collision(enemy)){
-		enemy.color = 0x0031;
-		w4.text("Collision: true", 2, 2);
-	}
-	else {
-		w4.text("Collision: false", 2, 2);
-		enemy.color = 0x0024;
-	}
-	
 	enemy.draw();
 	navi.draw();
 	player.drawSprite(frameCount);
@@ -94,6 +111,11 @@ export function update (): void {
 		playerMenu.draw();
 	}
 
+	if(battle.battleOn){
+		battle.draw();
+	}
+	
+	w4.text(`BCC:${battleCooldownCount}`, 100, 140);
 }
 
 export function input(): void {
@@ -102,6 +124,21 @@ export function input(): void {
     const PressedThisFrame = gamepad & (gamepad ^ prevState);
 	prevState = gamepad;
 
+	if(battle.battleOn){
+		if (PressedThisFrame & w4.BUTTON_LEFT)
+			battle.selectedOption -= 1;
+		if (PressedThisFrame & w4.BUTTON_RIGHT)
+			battle.selectedOption += 1;
+		if (PressedThisFrame & w4.BUTTON_2){
+			battle.executeOption();
+			if(battle.selectedOption == 2){
+				gameRunning = true;
+				canBattleCooldown = false;
+			}
+		}
+		
+	}
+	
 	if(gameRunning){
 		if (gamepad & w4.BUTTON_UP)
 			player.vetor2.movement(0,-1);
@@ -119,11 +156,21 @@ export function input(): void {
 			playerMenu.selectedOption += 1;
 		if (PressedThisFrame & w4.BUTTON_2)
 			playerMenu.executeOption();
+		if (PressedThisFrame & w4.BUTTON_1){
+			playerMenu.executeOption();
+			w4.trace(`Menu ANTES: ${menuOn}`);
+			w4.trace(`GameRunning ANTES: ${gameRunning}`);
+			menuOn = false;
+			gameRunning = true;
+			w4.trace(`Menu DPS: ${menuOn}`);
+			w4.trace(`GameRunning DPS: ${gameRunning}`);
+		}
 	}
-	if (PressedThisFrame & w4.BUTTON_1){
-		menuOn = !menuOn;
-		gameRunning = !menuOn;
-		w4.text("Menu: on", 2, 16);
+	else if (PressedThisFrame & w4.BUTTON_1 && gameRunning){
+		menuOn = true;
+		gameRunning = false;
+		w4.trace(`Menu: ${menuOn}`);
+		w4.trace(`GameRunning: ${gameRunning}`);
 	}		
 }
 //function inputOnMenu(): i32{
